@@ -1,12 +1,10 @@
 import streamlit as st
 import google.generativeai as genai
 
-
-# List available models
-
-
 # Set up Gemini API
 genai.configure(api_key= "AIzaSyBJb9F6GeG6_LL9PjWy1nz2T3DW_gjF-0k")  # Replace with your actual API key
+
+# List available models
 
 models = genai.list_models()
 for model in models:
