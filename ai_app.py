@@ -1,6 +1,8 @@
 import streamlit as st
 import google.generativeai as genai
 import PIL.Image
+import fitz
+import docx2txt
 import io
 
 # 🔐 Configure API key
@@ -40,7 +42,6 @@ with col2:
     user_input = st.text_input("Type your message here...")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-
 # Handle Uploaded File
 if uploaded_file is not None:
     if uploaded_file.type.startswith("image/"):
@@ -69,10 +70,48 @@ def chat_with_gemini(prompt):
     response = model.generate_content(prompt)
     return response.text
 
+# Upload file
+uploaded_file = st.file_uploader("Upload a document 📄", type=["txt", "pdf", "docx"])
 
-if st.button("🔄 Refresh Chat"):
-    st.session_state.chat_history = []  # Clear history
-    st.rerun()  # Refresh the app page
+file_text = ""
+
+if uploaded_file:
+    file_type = uploaded_file.name.split('.')[-1]
+
+    if file_type == 'txt':
+        file_text = uploaded_file.read().decode('utf-8')
+
+    elif file_type == 'pdf':
+        pdf_reader = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+        for page in pdf_reader:
+            file_text += page.get_text()
+
+    elif file_type == 'docx':
+        file_text = docx2txt.process(uploaded_file)
+
+    # Show user options
+    if file_text:
+        st.write("What would you like to do with this document? 💭👇")
+        action = st.selectbox("Choose an action", ["Summarize", "Extract Info", "Ask a Question"])
+
+        if action == "Summarize":
+            response = model.generate_content(f"Summarize this in simple terms:\n\n{file_text}")
+            st.text_area("Gem-Y's Summary 📝", response.text, height=250)
+
+        elif action == "Extract Info":
+            topic = st.text_input("Enter the topic you'd like to extract info about 🔍:")
+            if topic:
+                prompt = f"From this document, extract all information about {topic}:\n\n{file_text}"
+                response = model.generate_content(prompt)
+                st.text_area(f"Info about {topic} 📚", response.text, height=250)
+
+        elif action == "Ask a Question":
+            user_question = st.text_input("Ask anything about this document 🤔:")
+            if user_question:
+                prompt = f"Based on this document, answer the following question:\n{user_question}\n\nDocument:\n{file_text}"
+                response = model.generate_content(prompt)
+                st.text_area("Gem-Y's Answer 💬", response.text, height=250)
+
 
 # Send Button
 if st.button("Send"):
