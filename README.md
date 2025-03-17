@@ -11,3 +11,6 @@ A mini AI chatbot project called **"Gem-Y AI Chatbot"**, built using powerful AI
 - Python 🐍
 - Streamlit 📊
 - Google Gemini API 🔮
+  
+myapp.py just includes text-based Q&A
+ai_app.py includes updated version
