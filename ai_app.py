@@ -5,6 +5,18 @@ import fitz
 import docx2txt
 import io
 
+
+
+# 🎉 Welcome Page
+st.set_page_config(page_title="Gem-Y AI Chatbot", page_icon="🤖", layout="centered")
+
+st.markdown("""
+    <h1 style='text-align: center; color: #4CAF50;'>🌟 Welcome to Gem-Y AI Chatbot 🌟</h1>
+    <p style='text-align: center; font-size: 18px;'>Your personal AI assistant — ask questions, upload images or documents, and let Gem-Y handle the rest! 💬📄🖼️</p>
+    <hr>
+""", unsafe_allow_html=True)
+
+
 # 🔐 Configure API key
 genai.configure(api_key="AIzaSyBJb9F6GeG6_LL9PjWy1nz2T3DW_gjF-0k")  # Replace with your API key
 
